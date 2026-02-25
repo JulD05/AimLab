@@ -468,11 +468,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1029035981}
-  m_Father: {fileID: 775199757}
+  m_Father: {fileID: 1272225504}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 207, y: 0}
+  m_AnchoredPosition: {x: 957, y: 607}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &410481011
@@ -960,7 +960,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1867200880}
-  - {fileID: 410481010}
   m_Father: {fileID: 1272225504}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1011,7 +1010,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 775199759}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 221228478}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: HideAllUI
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1293614746}
+        m_TargetAssemblyTypeName: TargetSpawner, Assembly-CSharp
+        m_MethodName: StartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &775199759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1661,6 +1684,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 775199757}
+  - {fileID: 410481010}
   - {fileID: 1355472710}
   m_Father: {fileID: 1011766992}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1999,7 +2023,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonScale
   hoverScale: 1.08
-  pressScale: 0.95
+  pressScale: 1.12
   speed: 12
 --- !u!95 &1396378795
 Animator:
@@ -2802,6 +2826,9 @@ MonoBehaviour:
   cam: {fileID: 0}
   spawner: {fileID: 1293614746}
   scoreManager: {fileID: 1501995469}
+  explosionPrefab: {fileID: 625811182056323890, guid: f069aaa0547d647d7847c06b5ae2b25a, type: 3}
+  explosionSound: {fileID: 8300000, guid: f0bba60dd1813bd40af826dbaa99b983, type: 3}
+  explosionVolume: 0.8
 --- !u!4 &2125107472
 Transform:
   m_ObjectHideFlags: 0

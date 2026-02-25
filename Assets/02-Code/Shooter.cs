@@ -6,6 +6,12 @@ public class Shooter : MonoBehaviour
     [SerializeField] private TargetSpawner spawner;
     [SerializeField] private ScoreManager scoreManager;
 
+    [Header("VFX / SFX")]
+    [SerializeField] private GameObject explosionPrefab;
+    [SerializeField] private AudioClip explosionSound;
+    [Range(0f, 1f)]
+    [SerializeField] private float explosionVolume = 0.8f;
+
     void Awake()
     {
         if (cam == null) cam = Camera.main;
@@ -21,7 +27,20 @@ public class Shooter : MonoBehaviour
             {
                 if (hit.collider.GetComponent<Target>() != null)
                 {
-                    // ✅ On utilise le ScoreManager
+                    // VFX
+                    if (explosionPrefab != null)
+                    {
+                        GameObject explosion = Instantiate(explosionPrefab, hit.point, Quaternion.identity);
+                        Destroy(explosion, 1f);
+                    }
+
+                    // SFX
+                    if (explosionSound != null)
+                    {
+                        AudioSource.PlayClipAtPoint(explosionSound, hit.point, explosionVolume);
+                    }
+
+                    // Score
                     if (scoreManager != null)
                         scoreManager.AddPoint();
 

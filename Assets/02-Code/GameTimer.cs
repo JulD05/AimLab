@@ -10,6 +10,7 @@ public class GameTimer : MonoBehaviour
     [SerializeField] private RaycastShooter raycastShooter;
 
     private float remainingTime;
+    private float currentRoundDuration;
     private bool isRunning;
 
     void Awake()
@@ -34,7 +35,8 @@ public class GameTimer : MonoBehaviour
             uiManager?.ShowSummary(
                 raycastShooter != null ? raycastShooter.SuccessfulShots : 0,
                 raycastShooter != null ? raycastShooter.TotalShots : 0,
-                easyDuration
+                targetSpawner != null ? targetSpawner.MissedTargets : 0,
+                currentRoundDuration
             );
             return;
         }
@@ -49,7 +51,8 @@ public class GameTimer : MonoBehaviour
         if (timerText != null)
             timerText.gameObject.SetActive(true);
 
-        remainingTime = easyDuration;
+        currentRoundDuration = easyDuration;
+        remainingTime = currentRoundDuration;
         isRunning = true;
         UpdateTimerDisplay();
     }
@@ -58,6 +61,7 @@ public class GameTimer : MonoBehaviour
     {
         isRunning = false;
         remainingTime = easyDuration;
+        currentRoundDuration = 0f;
         UpdateTimerDisplay();
 
         if (timerText != null)

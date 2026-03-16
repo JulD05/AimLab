@@ -95,12 +95,12 @@ public class UIManager : MonoBehaviour
         ResetToMain();
     }
 
-    public void ShowSummary(int targetsKilled, int totalShots, float roundDuration)
+    public void ShowSummary(int targetsKilled, int totalShots, int missedTargets, float roundDuration)
     {
         targetSpawner?.StopGame();
         SetGameplayUIVisible(false);
         mouseLook?.SetCursorLockedState(false);
-        roundSummaryUI?.ShowSummary(targetsKilled, totalShots, roundDuration);
+        roundSummaryUI?.ShowSummary(targetsKilled, totalShots, missedTargets, roundDuration);
     }
 
     public void OnSummaryExitClicked()

@@ -26,7 +26,7 @@ public class RoundSummaryUI : MonoBehaviour
         HideSummary();
     }
 
-    public void ShowSummary(int targetsKilled, int totalShots, float roundDuration)
+    public void ShowSummary(int targetsKilled, int totalShots, int missedTargetsCount, float roundDuration)
     {
         EnsureBuilt();
 
@@ -37,12 +37,14 @@ public class RoundSummaryUI : MonoBehaviour
 
         labelsText.text =
             "Cibles tuees\n" +
+            "Cibles manquees\n" +
             "Tirs reussis\n" +
             "Tirs manques\n" +
             "Cibles par seconde";
 
         valuesText.text =
             targetsKilled + "\n" +
+            missedTargetsCount + "\n" +
             hitPercentage.ToString("0.0") + "%\n" +
             missPercentage.ToString("0.0") + "%\n" +
             killsPerSecond.ToString("0.00");
@@ -112,7 +114,7 @@ public class RoundSummaryUI : MonoBehaviour
         labelsRect.anchorMin = new Vector2(0.5f, 0.5f);
         labelsRect.anchorMax = new Vector2(0.5f, 0.5f);
         labelsRect.pivot = new Vector2(0.5f, 0.5f);
-        labelsRect.sizeDelta = new Vector2(190f, 320f);
+        labelsRect.sizeDelta = new Vector2(220f, 380f);
         labelsRect.anchoredPosition = new Vector2(-85f, 20f);
 
         valuesText = CreateText("Values", panelRect, string.Empty, 28f, FontStyles.Bold);
@@ -121,7 +123,7 @@ public class RoundSummaryUI : MonoBehaviour
         valuesRect.anchorMin = new Vector2(0.5f, 0.5f);
         valuesRect.anchorMax = new Vector2(0.5f, 0.5f);
         valuesRect.pivot = new Vector2(0.5f, 0.5f);
-        valuesRect.sizeDelta = new Vector2(150f, 320f);
+        valuesRect.sizeDelta = new Vector2(150f, 380f);
         valuesRect.anchoredPosition = new Vector2(105f, 20f);
 
         Button exitButton = CreateButton(panelRect, "Exit");

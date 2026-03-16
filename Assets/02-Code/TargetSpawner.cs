@@ -16,32 +16,68 @@ public class TargetSpawner : MonoBehaviour
     [Header("Spawn")]
     [Range(0f, 0.4f)]
     [SerializeField] private float marginX = 0.1f;
+    [SerializeField] private float mediumTargetLifetime = 2f;
 
     private GameObject current;
-    private bool gameStarted = false; 
+    private bool gameStarted = false;
+    private bool timedTargetMode;
+    private float currentTargetLifetime;
+    private float remainingTargetLifetime;
+    private int missedTargets;
+
+    public int MissedTargets => missedTargets;
 
     void Awake()
     {
         if (worldCamera == null) worldCamera = Camera.main;
     }
 
-    void Start()
+    void Update()
     {
-        // plus de Spawn() ici
-        // Spawn uniquement quand une difficulté est choisie
+        if (!gameStarted || !timedTargetMode || current == null) return;
+
+        remainingTargetLifetime -= Time.deltaTime;
+        if (remainingTargetLifetime > 0f) return;
+
+        missedTargets++;
+        Destroy(current);
+        current = null;
+        Spawn();
     }
 
    
     public void StartGame()
     {
+        StartEasyMode();
+    }
+
+    public void StartEasyMode()
+    {
         gameStarted = true;
-        Respawn(); 
+        timedTargetMode = false;
+        currentTargetLifetime = 0f;
+        remainingTargetLifetime = 0f;
+        missedTargets = 0;
+        Respawn();
+    }
+
+    public void StartMediumMode()
+    {
+        gameStarted = true;
+        timedTargetMode = true;
+        currentTargetLifetime = mediumTargetLifetime;
+        remainingTargetLifetime = currentTargetLifetime;
+        missedTargets = 0;
+        Respawn();
     }
 
   
     public void StopGame()
     {
         gameStarted = false;
+        timedTargetMode = false;
+        currentTargetLifetime = 0f;
+        remainingTargetLifetime = 0f;
 
         if (current != null)
         {
@@ -68,6 +104,9 @@ public class TargetSpawner : MonoBehaviour
 
         Vector3 worldPos = worldCamera.ViewportToWorldPoint(new Vector3(vx, vy, distance));
         current = Instantiate(targetPrefab, worldPos, Quaternion.identity);
+
+        if (timedTargetMode)
+            remainingTargetLifetime = currentTargetLifetime;
     }
 
     public void Respawn()

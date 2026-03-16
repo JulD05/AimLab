@@ -12,6 +12,10 @@ public class GameTimer : MonoBehaviour
     private float remainingTime;
     private float currentRoundDuration;
     private bool isRunning;
+    private bool isPaused;
+
+    public bool IsRoundRunning => isRunning;
+    public bool IsPaused => isPaused;
 
     void Awake()
     {
@@ -23,6 +27,7 @@ public class GameTimer : MonoBehaviour
 
     void Update()
     {
+        if (isPaused) return;
         if (!isRunning) return;
 
         remainingTime -= Time.deltaTime;
@@ -47,6 +52,7 @@ public class GameTimer : MonoBehaviour
     public void StartEasyRound()
     {
         raycastShooter?.ResetRoundStats();
+        isPaused = false;
 
         if (timerText != null)
             timerText.gameObject.SetActive(true);
@@ -60,6 +66,7 @@ public class GameTimer : MonoBehaviour
     public void ResetTimerDisplay()
     {
         isRunning = false;
+        isPaused = false;
         remainingTime = easyDuration;
         currentRoundDuration = 0f;
         UpdateTimerDisplay();
@@ -72,5 +79,17 @@ public class GameTimer : MonoBehaviour
     {
         if (timerText == null) return;
         timerText.text = "Temps: " + Mathf.CeilToInt(remainingTime);
+    }
+
+    public void PauseTimer()
+    {
+        if (!isRunning) return;
+        isPaused = true;
+    }
+
+    public void ResumeTimer()
+    {
+        if (!isRunning) return;
+        isPaused = false;
     }
 }

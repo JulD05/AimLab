@@ -4,96 +4,185 @@ public class TargetSpawner : MonoBehaviour
 {
     [Header("Prefab")]
     [SerializeField] private GameObject targetPrefab;
-     [Header("stats")]
-    public int MissedTargets = 0;
-    [Header("Position de la Ligne")]
-    [SerializeField] private Transform playerTransform; // Glisse ton Player ici
-    [SerializeField] private float hauteurCible = 1.5f;   // Hauteur fixe (ex: 1.5m du sol)
-    [SerializeField] private float distanceDevant = 5f;  // Distance devant le joueur
-    [SerializeField] private float largeurLigne = 4f;    // Largeur totale de la zone de spawn
 
-    [Header("Sécurité Murs")]
+    [Header("Zone de Spawn")]
+    [SerializeField] private Vector3 spawnCenter = new Vector3(0f, 2.2f, 4f);
+    [SerializeField] private Vector2 spawnSize = new Vector2(12f, 3f);
+    [SerializeField] private int maxSpawnAttempts = 10;
+
+    [Header("Collision")]
     [SerializeField] private LayerMask obstructionMask;
     [SerializeField] private float sphereRadius = 0.5f;
 
-    [Header("Configuration")]
-    [SerializeField] private int columns = 5;
+    [Header("Mode Moyen")]
+    [SerializeField] private float mediumTargetLifetime = 2f;
+    [SerializeField] private Vector2 mediumDepthOffsetRange = new Vector2(-4f, 2f);
+    [SerializeField] private Vector2 mediumScaleRange = new Vector2(0.55f, 1f);
+
+    [Header("Mode Difficile")]
+    [SerializeField] private float hardMoveSpeed = 6f;
 
     private GameObject current;
-    private bool gameStarted = false;
-    private int lastColIndex = -1;
+    private bool gameStarted;
+    private bool timedTargetMode;
+    private bool movingTargetMode;
+    private float remainingTargetLifetime;
+    private float currentMoveTargetX;
+    private int missedTargets;
 
-    void Awake() 
+    public int MissedTargets => missedTargets;
+
+    void Update()
     {
-        // Si tu n'as pas assigné le joueur, on cherche celui qui a le tag "Player"
-        if (playerTransform == null) playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        if (!gameStarted) return;
+
+        if (movingTargetMode && current != null)
+            MoveCurrentTarget();
+
+        if (!timedTargetMode || current == null) return;
+
+        remainingTargetLifetime -= Time.deltaTime;
+        if (remainingTargetLifetime > 0f) return;
+
+        missedTargets++;
+        Destroy(current);
+        current = null;
+        Spawn();
     }
 
-    public void StartGame() { 
-        MissedTargets = 0;
-        gameStarted = true; 
-        Respawn(); }
-    public void StopGame() { gameStarted = false; if (current != null) Destroy(current); }
+    public void StartGame()
+    {
+        StartEasyMode();
+    }
+
+    public void StartEasyMode()
+    {
+        BeginGame(false, false);
+    }
+
+    public void StartMediumMode()
+    {
+        BeginGame(true, false);
+    }
+
+    public void StartDifficultMode()
+    {
+        BeginGame(true, true);
+    }
+
+    void BeginGame(bool enableTimedTargets, bool enableMovingTargets)
+    {
+        missedTargets = 0;
+        gameStarted = true;
+        timedTargetMode = enableTimedTargets;
+        movingTargetMode = enableMovingTargets;
+        remainingTargetLifetime = 0f;
+        currentMoveTargetX = 0f;
+        Respawn();
+    }
+
+    public void StopGame()
+    {
+        gameStarted = false;
+        timedTargetMode = false;
+        movingTargetMode = false;
+        remainingTargetLifetime = 0f;
+        currentMoveTargetX = 0f;
+
+        if (current != null)
+        {
+            Destroy(current);
+            current = null;
+        }
+    }
+
     public void ResetStats()
-            {
-                MissedTargets = 0;
-            }
+    {
+        missedTargets = 0;
+    }
+
     public void Spawn()
     {
-        if (!gameStarted || current != null || playerTransform == null) return;
+        if (!gameStarted || current != null || targetPrefab == null) return;
 
-        // 1. Choisir une colonne
-        int col = Random.Range(0, columns);
-        if (col == lastColIndex && columns > 1) col = (col + 1) % columns;
-        lastColIndex = col;
-
-        // 2. Calculer la position "de base" (en face du joueur au niveau du sol)
-        Vector3 directionDevant = playerTransform.forward;
-        directionDevant.y = 0; // On annule l'inclinaison de la vue (très important !)
-        directionDevant.Normalize();
-
-        Vector3 centreLigne = playerTransform.position + (directionDevant * distanceDevant);
-        centreLigne.y = hauteurCible; // On force la hauteur fixe
-
-        // 3. Calculer le décalage gauche/droite
-        Vector3 directionDroite = playerTransform.right;
-        directionDroite.y = 0;
-        directionDroite.Normalize();
-
-        float offset = Mathf.Lerp(-largeurLigne / 2f, largeurLigne / 2f, (float)col / (columns - 1));
-        Vector3 spawnPos = centreLigne + (directionDroite * offset);
-
-        // 4. Vérifier si un mur bloque
-        if (Physics.CheckSphere(spawnPos, sphereRadius, obstructionMask))
+        int attempts = Mathf.Max(1, maxSpawnAttempts);
+        for (int i = 0; i < attempts; i++)
         {
-            // Si c'est bouché, on réessaie une autre colonne immédiatement
-            Spawn(); 
+            float targetScale = GetRandomTargetScale();
+            Vector3 spawnPosition = GetRandomSpawnPosition(targetScale);
+
+            if (obstructionMask.value != 0 && Physics.CheckSphere(spawnPosition, sphereRadius * targetScale, obstructionMask))
+                continue;
+
+            current = Instantiate(targetPrefab, spawnPosition, Quaternion.identity);
+            current.transform.localScale = Vector3.one * targetScale;
+
+            if (timedTargetMode)
+                remainingTargetLifetime = mediumTargetLifetime;
+
             return;
         }
 
-        current = Instantiate(targetPrefab, spawnPos, Quaternion.identity);
+        Debug.LogWarning("TargetSpawner: no valid spawn position found in the area.");
+    }
+
+    Vector3 GetRandomSpawnPosition(float targetScale)
+    {
+        float minX = spawnCenter.x - spawnSize.x * 0.5f + sphereRadius * targetScale;
+        float maxX = spawnCenter.x + spawnSize.x * 0.5f - sphereRadius * targetScale;
+        float randomX = Random.Range(minX, maxX);
+        float randomY = Random.Range(-spawnSize.y * 0.5f, spawnSize.y * 0.5f);
+        float randomZ = 0f;
+
+        if (timedTargetMode)
+            randomZ = Random.Range(mediumDepthOffsetRange.x, mediumDepthOffsetRange.y);
+
+        if (movingTargetMode)
+        {
+            bool leftToRight = Random.value < 0.5f;
+            randomX = leftToRight ? minX : maxX;
+            currentMoveTargetX = leftToRight ? maxX : minX;
+        }
+        else
+        {
+            currentMoveTargetX = randomX;
+        }
+
+        return spawnCenter + new Vector3(randomX - spawnCenter.x, randomY, randomZ);
+    }
+
+    float GetRandomTargetScale()
+    {
+        if (!timedTargetMode) return 1f;
+        return Random.Range(mediumScaleRange.x, mediumScaleRange.y);
+    }
+
+    void MoveCurrentTarget()
+    {
+        Vector3 currentPosition = current.transform.position;
+        currentPosition.x = Mathf.MoveTowards(currentPosition.x, currentMoveTargetX, hardMoveSpeed * Time.deltaTime);
+        current.transform.position = currentPosition;
     }
 
     public void Respawn()
     {
         if (!gameStarted) return;
-        if (current != null) Destroy(current);
+
+        if (current != null)
+            Destroy(current);
+
         current = null;
         Spawn();
     }
 
-    // Pour voir la ligne dans l'éditeur (fenêtre Scene)
     void OnDrawGizmosSelected()
     {
-        if (playerTransform == null) return;
         Gizmos.color = Color.cyan;
-        Vector3 dir = playerTransform.forward; dir.y = 0; dir.Normalize();
-        Vector3 center = playerTransform.position + (dir * distanceDevant);
-        center.y = hauteurCible;
-        
-        Vector3 right = playerTransform.right; right.y = 0; right.Normalize();
-        Vector3 start = center - (right * largeurLigne / 2f);
-        Vector3 end = center + (right * largeurLigne / 2f);
-        Gizmos.DrawLine(start, end);
+        Gizmos.DrawWireCube(spawnCenter, new Vector3(spawnSize.x, spawnSize.y, 0.2f));
+
+        Gizmos.color = Color.yellow;
+        Vector3 mediumCenter = spawnCenter + new Vector3(0f, 0f, (mediumDepthOffsetRange.x + mediumDepthOffsetRange.y) * 0.5f);
+        float mediumDepth = Mathf.Abs(mediumDepthOffsetRange.y - mediumDepthOffsetRange.x);
+        Gizmos.DrawWireCube(mediumCenter, new Vector3(spawnSize.x, spawnSize.y, mediumDepth));
     }
 }

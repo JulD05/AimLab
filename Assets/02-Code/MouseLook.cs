@@ -24,12 +24,6 @@ public class MouseLook : MonoBehaviour
 
     void Update()
     {
-        // Toggle curseur avec ESC
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            SetCursorLocked(!isLocked);
-        }
-
         // Si curseur pas lock => on ne tourne pas la caméra (tu peux cliquer l'UI)
         if (!isLocked) return;
         if (Mouse.current == null) return;

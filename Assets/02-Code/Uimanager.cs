@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class UIManager : MonoBehaviour
 {
@@ -18,6 +19,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject[] gameplayUI;
 
     private RoundSummaryUI roundSummaryUI;
+    private PauseMenuUI pauseMenuUI;
+    private bool gameplayActive;
+    private bool pauseActive;
 
     void Awake()
     {
@@ -35,12 +39,36 @@ public class UIManager : MonoBehaviour
         }
 
         roundSummaryUI.Initialize(this);
+
+        pauseMenuUI = FindObjectOfType<PauseMenuUI>();
+        if (pauseMenuUI == null)
+        {
+            GameObject pauseObject = new GameObject("PauseMenu");
+            pauseMenuUI = pauseObject.AddComponent<PauseMenuUI>();
+        }
+
+        pauseMenuUI.Initialize(this);
     }
 
     // Etat initial : Play + Exit, pas d'Option, pas de difficulté
     void Start()
     {
         ResetToMain();
+    }
+
+    void Update()
+    {
+        if (Keyboard.current == null) return;
+        if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
+        if (!gameplayActive) return;
+
+        if (pauseActive)
+        {
+            ResumeGame();
+            return;
+        }
+
+        PauseGame();
     }
 
     // Play : cache Play, montre Option
@@ -69,6 +97,10 @@ public class UIManager : MonoBehaviour
         if (optionButton != null) optionButton.SetActive(false);
         if (difficultyPanel != null) difficultyPanel.SetActive(false);
 
+        gameplayActive = true;
+        pauseActive = false;
+        Time.timeScale = 1f;
+        pauseMenuUI?.HidePause();
         scoreManager?.ResetScore();
         SetGameplayUIVisible(true);
         mouseLook?.SetCursorLockedState(true);
@@ -77,8 +109,12 @@ public class UIManager : MonoBehaviour
     // Exit : revient à l'état initial
     public void ResetToMain()
     {
+        gameplayActive = false;
+        pauseActive = false;
+        Time.timeScale = 1f;
         targetSpawner?.StopGame();
         roundSummaryUI?.HideSummary();
+        pauseMenuUI?.HidePause();
         if (playButton != null) playButton.SetActive(true);
         if (exitButton != null) exitButton.SetActive(true);
         if (optionButton != null) optionButton.SetActive(false);
@@ -97,13 +133,27 @@ public class UIManager : MonoBehaviour
 
     public void ShowSummary(int targetsKilled, int totalShots, int missedTargets, float roundDuration)
     {
+        gameplayActive = false;
+        pauseActive = false;
+        Time.timeScale = 1f;
         targetSpawner?.StopGame();
+        pauseMenuUI?.HidePause();
         SetGameplayUIVisible(false);
         mouseLook?.SetCursorLockedState(false);
         roundSummaryUI?.ShowSummary(targetsKilled, totalShots, missedTargets, roundDuration);
     }
 
     public void OnSummaryExitClicked()
+    {
+        ResetToMain();
+    }
+
+    public void OnPauseResumeClicked()
+    {
+        ResumeGame();
+    }
+
+    public void OnPauseExitClicked()
     {
         ResetToMain();
     }
@@ -130,5 +180,28 @@ public class UIManager : MonoBehaviour
             || exitButton != null
             || optionButton != null
             || difficultyPanel != null;
+    }
+
+    void PauseGame()
+    {
+        if (pauseActive) return;
+        if (gameTimer != null && !gameTimer.IsRoundRunning) return;
+
+        pauseActive = true;
+        Time.timeScale = 0f;
+        gameTimer?.PauseTimer();
+        mouseLook?.SetCursorLockedState(false);
+        pauseMenuUI?.ShowPause();
+    }
+
+    void ResumeGame()
+    {
+        if (!pauseActive) return;
+
+        pauseActive = false;
+        Time.timeScale = 1f;
+        gameTimer?.ResumeTimer();
+        pauseMenuUI?.HidePause();
+        mouseLook?.SetCursorLockedState(true);
     }
 }

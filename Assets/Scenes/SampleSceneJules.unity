@@ -2101,12 +2101,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetSpawner
   targetPrefab: {fileID: 7015244727122646417, guid: fc1c1120e80d74768a3d4c63c34f4a39, type: 3}
-  referenceButton: {fileID: 2132921144}
-  uiCamera: {fileID: 0}
-  worldCamera: {fileID: 0}
-  distance: 5
-  marginX: 0.1
+  spawnCenter: {x: 0, y: 2.2, z: 4}
+  spawnSize: {x: 12, y: 3}
+  maxSpawnAttempts: 10
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 8
+  sphereRadius: 0.5
   mediumTargetLifetime: 2
+  mediumDepthOffsetRange: {x: -4, y: 2}
+  mediumScaleRange: {x: 0.55, y: 1}
+  hardMoveSpeed: 6
 --- !u!4 &1215854599
 Transform:
   m_ObjectHideFlags: 0
@@ -2646,7 +2651,19 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1215854598}
         m_TargetAssemblyTypeName: TargetSpawner, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: StartDifficultMode
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1052101564}
+        m_TargetAssemblyTypeName: GameTimer, Assembly-CSharp
+        m_MethodName: StartEasyRound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -64,6 +64,7 @@ public class RaycastShooter : MonoBehaviour
     public ScoreManager scoreManager;
 
     Camera cam;
+    WeaponRecoil weaponRecoil;
     int totalShots;
     int successfulShots;
 
@@ -73,6 +74,10 @@ public class RaycastShooter : MonoBehaviour
     void Awake()
     {
         cam = GetComponent<Camera>();
+        weaponRecoil = GetComponent<WeaponRecoil>();
+
+        if (weaponRecoil == null)
+            weaponRecoil = gameObject.AddComponent<WeaponRecoil>();
     }
 
     void Update()
@@ -90,6 +95,8 @@ public class RaycastShooter : MonoBehaviour
 
         if (shootAudio != null)
             shootAudio.Play();
+
+        weaponRecoil?.PlayRecoil();
 
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
 

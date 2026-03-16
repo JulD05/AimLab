@@ -289,6 +289,9 @@ MonoBehaviour:
   explosionPrefab: {fileID: 625811182056323890, guid: f069aaa0547d647d7847c06b5ae2b25a, type: 3}
   explosionSound: {fileID: 8300000, guid: f0bba60dd1813bd40af826dbaa99b983, type: 3}
   explosionVolume: 0.8
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!4 &4805773
 Transform:
   m_ObjectHideFlags: 0
@@ -674,6 +677,11 @@ MonoBehaviour:
   exitButton: {fileID: 0}
   optionButton: {fileID: 0}
   difficultyPanel: {fileID: 0}
+  mouseLook: {fileID: 0}
+  targetSpawner: {fileID: 0}
+  scoreManager: {fileID: 0}
+  gameTimer: {fileID: 0}
+  gameplayUI: []
 --- !u!114 &454521628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1763,6 +1771,7 @@ MonoBehaviour:
   easyDuration: 60
   uiManager: {fileID: 2060513213}
   targetSpawner: {fileID: 1215854598}
+  raycastShooter: {fileID: 0}
 --- !u!1 &1105097127
 GameObject:
   m_ObjectHideFlags: 0
@@ -2761,11 +2770,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7403622742486595741, guid: 7e7b80c2d20e66c4fade2ccee8ab5df1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7403622742486595741, guid: 7e7b80c2d20e66c4fade2ccee8ab5df1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.103
+      value: -0.02
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7e7b80c2d20e66c4fade2ccee8ab5df1, type: 3}
       propertyPath: m_Name

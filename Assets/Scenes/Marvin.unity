@@ -152,6 +152,10 @@ MonoBehaviour:
   exitButton: {fileID: 1523049822}
   optionButton: {fileID: 2111964531}
   difficultyPanel: {fileID: 1272225503}
+  mouseLook: {fileID: 0}
+  targetSpawner: {fileID: 0}
+  scoreManager: {fileID: 0}
+  gameplayUI: []
 --- !u!4 &221228479
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +184,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -307,6 +312,27 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb4e1852a66047bf9d315e0fa4843fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Shooter
+  range: 100
+  environmentMask:
+    serializedVersion: 2
+    m_Bits: 0
+  impactPrefab: {fileID: 0}
+  impactLifetime: 1
+  shootAudio: {fileID: 0}
+  targetSpawner: {fileID: 0}
+  scoreManager: {fileID: 1501995469}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -2665,6 +2691,10 @@ MonoBehaviour:
   exitButton: {fileID: 0}
   optionButton: {fileID: 0}
   difficultyPanel: {fileID: 0}
+  mouseLook: {fileID: 0}
+  targetSpawner: {fileID: 0}
+  scoreManager: {fileID: 0}
+  gameplayUI: []
 --- !u!114 &2111964537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2712,8 +2742,8 @@ MonoBehaviour:
   cam: {fileID: 0}
   spawner: {fileID: 1293614746}
   scoreManager: {fileID: 1501995469}
-  explosionPrefab: {fileID: 625811182056323890, guid: f069aaa0547d647d7847c06b5ae2b25a, type: 3}
-  explosionSound: {fileID: 8300000, guid: f0bba60dd1813bd40af826dbaa99b983, type: 3}
+  explosionPrefab: {fileID: 0}
+  explosionSound: {fileID: 0}
   explosionVolume: 0.8
   targetLayer:
     serializedVersion: 2

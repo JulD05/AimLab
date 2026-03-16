@@ -9,12 +9,17 @@ public class MouseLook : MonoBehaviour
     [Header("References")]
     public Transform playerBody;
 
+    [Header("Cursor")]
+    [SerializeField] private bool startUnlocked = false;
+
     private float xRotation = 0f;
     private bool isLocked = true;
 
     void Start()
     {
-        SetCursorLocked(true);
+        RecenterPlayerPivotOnCamera();
+        xRotation = NormalizeAngle(transform.localEulerAngles.x);
+        SetCursorLocked(!startUnlocked);
     }
 
     void Update()
@@ -27,6 +32,7 @@ public class MouseLook : MonoBehaviour
 
         // Si curseur pas lock => on ne tourne pas la caméra (tu peux cliquer l'UI)
         if (!isLocked) return;
+        if (Mouse.current == null) return;
 
         Vector2 mouseDelta = Mouse.current.delta.ReadValue();
 
@@ -38,6 +44,27 @@ public class MouseLook : MonoBehaviour
 
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         playerBody.Rotate(Vector3.up * mouseX);
+    }
+
+    public void SetCursorLockedState(bool locked)
+    {
+        SetCursorLocked(locked);
+    }
+
+    void RecenterPlayerPivotOnCamera()
+    {
+        if (playerBody == null) return;
+        if (transform.parent != playerBody) return;
+
+        Vector3 cameraWorldPosition = transform.position;
+        playerBody.position = cameraWorldPosition;
+        transform.localPosition = Vector3.zero;
+    }
+
+    float NormalizeAngle(float angle)
+    {
+        if (angle > 180f) angle -= 360f;
+        return angle;
     }
 
     private void SetCursorLocked(bool locked)

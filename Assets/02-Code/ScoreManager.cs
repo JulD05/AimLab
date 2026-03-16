@@ -18,6 +18,12 @@ public class ScoreManager : MonoBehaviour
         UpdateUI();
     }
 
+    public void ResetScore()
+    {
+        score = 0;
+        UpdateUI();
+    }
+
     void UpdateUI()
     {
         if (scoreText != null)

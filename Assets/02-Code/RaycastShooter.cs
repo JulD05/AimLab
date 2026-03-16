@@ -60,6 +60,8 @@ public class RaycastShooter : MonoBehaviour
     public float impactLifetime = 1f;
 
     public AudioSource shootAudio;
+    public TargetSpawner targetSpawner;
+    public ScoreManager scoreManager;
 
     Camera cam;
 
@@ -70,29 +72,40 @@ public class RaycastShooter : MonoBehaviour
 
     void Update()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            Shoot();
-        }
+        if (Mouse.current == null) return;
+        if (Cursor.lockState != CursorLockMode.Locked) return;
+        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        Shoot();
     }
 
     void Shoot()
     {
-        // 🔊 Joue le son
         if (shootAudio != null)
             shootAudio.Play();
 
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
 
-        if (Physics.Raycast(ray, out RaycastHit hit, range, environmentMask))
-        {
-            GameObject impact = Instantiate(
-                impactPrefab,
-                hit.point,
-                Quaternion.LookRotation(hit.normal)
-            );
+        if (!Physics.Raycast(ray, out RaycastHit hit, range)) return;
 
-            Destroy(impact, impactLifetime);
+        Target target = hit.collider.GetComponentInParent<Target>();
+        if (target != null)
+        {
+            scoreManager?.AddPoint();
+            target.Hit();
+            targetSpawner?.Respawn();
+            return;
         }
+
+        if ((environmentMask.value & (1 << hit.collider.gameObject.layer)) == 0) return;
+        if (impactPrefab == null) return;
+
+        GameObject impact = Instantiate(
+            impactPrefab,
+            hit.point,
+            Quaternion.LookRotation(hit.normal)
+        );
+
+        Destroy(impact, impactLifetime);
     }
 }

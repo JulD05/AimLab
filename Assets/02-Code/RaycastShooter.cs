@@ -64,6 +64,11 @@ public class RaycastShooter : MonoBehaviour
     public ScoreManager scoreManager;
 
     Camera cam;
+    int totalShots;
+    int successfulShots;
+
+    public int TotalShots => totalShots;
+    public int SuccessfulShots => successfulShots;
 
     void Awake()
     {
@@ -81,6 +86,8 @@ public class RaycastShooter : MonoBehaviour
 
     void Shoot()
     {
+        totalShots++;
+
         if (shootAudio != null)
             shootAudio.Play();
 
@@ -91,6 +98,7 @@ public class RaycastShooter : MonoBehaviour
         Target target = hit.collider.GetComponentInParent<Target>();
         if (target != null)
         {
+            successfulShots++;
             scoreManager?.AddPoint();
             target.Hit();
             targetSpawner?.Respawn();
@@ -107,5 +115,11 @@ public class RaycastShooter : MonoBehaviour
         );
 
         Destroy(impact, impactLifetime);
+    }
+
+    public void ResetRoundStats()
+    {
+        totalShots = 0;
+        successfulShots = 0;
     }
 }

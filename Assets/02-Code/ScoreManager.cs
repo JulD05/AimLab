@@ -7,6 +7,8 @@ public class ScoreManager : MonoBehaviour
 
     private int score = 0;
 
+    public int CurrentScore => score;
+
     void Start()
     {
         UpdateUI();

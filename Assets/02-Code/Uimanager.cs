@@ -14,7 +14,28 @@ public class UIManager : MonoBehaviour
     [SerializeField] private MouseLook mouseLook;
     [SerializeField] private TargetSpawner targetSpawner;
     [SerializeField] private ScoreManager scoreManager;
+    [SerializeField] private GameTimer gameTimer;
     [SerializeField] private GameObject[] gameplayUI;
+
+    private RoundSummaryUI roundSummaryUI;
+
+    void Awake()
+    {
+        if (!HasAnyMenuReference())
+        {
+            enabled = false;
+            return;
+        }
+
+        roundSummaryUI = FindObjectOfType<RoundSummaryUI>();
+        if (roundSummaryUI == null)
+        {
+            GameObject summaryObject = new GameObject("Summary");
+            roundSummaryUI = summaryObject.AddComponent<RoundSummaryUI>();
+        }
+
+        roundSummaryUI.Initialize(this);
+    }
 
     // Etat initial : Play + Exit, pas d'Option, pas de difficulté
     void Start()
@@ -57,17 +78,32 @@ public class UIManager : MonoBehaviour
     public void ResetToMain()
     {
         targetSpawner?.StopGame();
+        roundSummaryUI?.HideSummary();
         if (playButton != null) playButton.SetActive(true);
         if (exitButton != null) exitButton.SetActive(true);
         if (optionButton != null) optionButton.SetActive(false);
         if (difficultyPanel != null) difficultyPanel.SetActive(false);
         scoreManager?.ResetScore();
+        gameTimer?.ResetTimerDisplay();
         SetGameplayUIVisible(false);
         mouseLook?.SetCursorLockedState(false);
     }
 
     // Bouton Exit
     public void OnExitClicked()
+    {
+        ResetToMain();
+    }
+
+    public void ShowSummary(int targetsKilled, int totalShots, float roundDuration)
+    {
+        targetSpawner?.StopGame();
+        SetGameplayUIVisible(false);
+        mouseLook?.SetCursorLockedState(false);
+        roundSummaryUI?.ShowSummary(targetsKilled, totalShots, roundDuration);
+    }
+
+    public void OnSummaryExitClicked()
     {
         ResetToMain();
     }
@@ -86,5 +122,13 @@ public class UIManager : MonoBehaviour
             if (uiElement != null)
                 uiElement.SetActive(visible);
         }
+    }
+
+    bool HasAnyMenuReference()
+    {
+        return playButton != null
+            || exitButton != null
+            || optionButton != null
+            || difficultyPanel != null;
     }
 }

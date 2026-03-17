@@ -1898,7 +1898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameTimer
   timerText: {fileID: 1052101563}
-  gameDuration: 5
+  gameDuration: 60
   uiManager: {fileID: 2060513213}
   targetSpawner: {fileID: 1215854598}
   raycastShooter: {fileID: 0}

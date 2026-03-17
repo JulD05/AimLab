@@ -32,8 +32,10 @@ public class TargetSpawner : MonoBehaviour
     private float remainingTargetLifetime;
     private float currentMoveTargetX;
     private int missedTargets;
+    private GameDifficulty currentDifficulty = GameDifficulty.None;
 
     public int MissedTargets => missedTargets;
+    public GameDifficulty CurrentDifficulty => currentDifficulty;
 
     void Update()
     {
@@ -60,16 +62,19 @@ public class TargetSpawner : MonoBehaviour
 
     public void StartEasyMode()
     {
+        currentDifficulty = GameDifficulty.Easy;
         BeginGame(false, false);
     }
 
     public void StartMediumMode()
     {
+        currentDifficulty = GameDifficulty.Medium;
         BeginGame(true, false);
     }
 
     public void StartDifficultMode()
     {
+        currentDifficulty = GameDifficulty.Difficult;
         BeginGame(true, true);
     }
 
@@ -103,6 +108,7 @@ public class TargetSpawner : MonoBehaviour
         movingTargetMode = false;
         remainingTargetLifetime = 0f;
         currentMoveTargetX = 0f;
+        currentDifficulty = GameDifficulty.None;
 
         if (current != null)
         {

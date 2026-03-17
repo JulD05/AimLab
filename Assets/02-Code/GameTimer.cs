@@ -36,7 +36,6 @@ public class GameTimer : MonoBehaviour
             remainingTime = 0f;
             isRunning = false;
             UpdateTimerDisplay();
-            targetSpawner?.StopGame();
             uiManager?.ShowSummary(
                 raycastShooter != null ? raycastShooter.SuccessfulShots : 0,
                 raycastShooter != null ? raycastShooter.TotalShots : 0,

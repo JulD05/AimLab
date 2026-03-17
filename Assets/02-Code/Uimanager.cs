@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour
 
     private RoundSummaryUI roundSummaryUI;
     private PauseMenuUI pauseMenuUI;
+    private LeaderboardDatabase leaderboardDatabase;
+    private LeaderboardUI leaderboardUI;
     private bool gameplayActive;
     private bool pauseActive;
 
@@ -48,6 +50,16 @@ public class UIManager : MonoBehaviour
         }
 
         pauseMenuUI.Initialize(this);
+
+        leaderboardDatabase = LeaderboardDatabase.LoadRuntimeDatabase();
+        leaderboardUI = FindObjectOfType<LeaderboardUI>();
+        if (leaderboardUI == null)
+        {
+            GameObject leaderboardObject = new GameObject("LeaderboardUI");
+            leaderboardUI = leaderboardObject.AddComponent<LeaderboardUI>();
+        }
+
+        leaderboardUI.Initialize(this, leaderboardDatabase);
     }
 
     // Etat initial : Play + Exit, pas d'Option, pas de difficulté
@@ -74,6 +86,8 @@ public class UIManager : MonoBehaviour
     // Play : cache Play, montre Option
     public void OnPlayClicked()
     {
+        leaderboardUI?.HideAll();
+        SetMainMenuButtonsVisible(false);
         if (playButton != null) playButton.SetActive(false);
         if (exitButton != null) exitButton.SetActive(true);
         if (optionButton != null) optionButton.SetActive(true);
@@ -100,6 +114,7 @@ public class UIManager : MonoBehaviour
         gameplayActive = true;
         pauseActive = false;
         Time.timeScale = 1f;
+        leaderboardUI?.HideAll();
         pauseMenuUI?.HidePause();
         scoreManager?.ResetScore();
         SetGameplayUIVisible(true);
@@ -114,6 +129,8 @@ public class UIManager : MonoBehaviour
         Time.timeScale = 1f;
         targetSpawner?.StopGame();
         roundSummaryUI?.HideSummary();
+        leaderboardUI?.HideAll();
+        leaderboardUI?.SetHomeButtonVisible(true);
         pauseMenuUI?.HidePause();
         if (playButton != null) playButton.SetActive(true);
         if (exitButton != null) exitButton.SetActive(true);
@@ -133,14 +150,19 @@ public class UIManager : MonoBehaviour
 
     public void ShowSummary(int targetsKilled, int totalShots, int missedTargets, float roundDuration)
     {
+        GameDifficulty finishedDifficulty = targetSpawner != null ? targetSpawner.CurrentDifficulty : GameDifficulty.None;
+        int finalScore = scoreManager != null ? scoreManager.CurrentScore : targetsKilled;
+
         gameplayActive = false;
         pauseActive = false;
         Time.timeScale = 1f;
         targetSpawner?.StopGame();
+        leaderboardUI?.HideAll();
         pauseMenuUI?.HidePause();
         SetGameplayUIVisible(false);
         mouseLook?.SetCursorLockedState(false);
         roundSummaryUI?.ShowSummary(targetsKilled, totalShots, missedTargets, roundDuration);
+        leaderboardUI?.TryPromptForScore(finishedDifficulty, finalScore);
     }
 
     public void OnSummaryExitClicked()
@@ -161,6 +183,18 @@ public class UIManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void SetMainMenuButtonsVisible(bool visible)
+    {
+        if (playButton != null) playButton.SetActive(visible);
+        if (exitButton != null) exitButton.SetActive(visible);
+
+        if (optionButton != null)
+            optionButton.SetActive(false);
+
+        if (difficultyPanel != null)
+            difficultyPanel.SetActive(false);
     }
 
     void SetGameplayUIVisible(bool visible)

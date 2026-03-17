@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class TargetSpawner : MonoBehaviour
 {
+    [SerializeField] private AudioSource radioSource;
+    [Header("Audio")]
+    [SerializeField] private AudioSource menuMusic;
     [Header("Prefab")]
     [SerializeField] private GameObject targetPrefab;
 
@@ -72,6 +75,14 @@ public class TargetSpawner : MonoBehaviour
 
     void BeginGame(bool enableTimedTargets, bool enableMovingTargets)
     {
+        if (menuMusic != null) 
+        {
+            menuMusic.Stop();
+        }
+        if (radioSource != null)
+        {
+            radioSource.Play();
+        }
         missedTargets = 0;
         gameStarted = true;
         timedTargetMode = enableTimedTargets;
@@ -83,6 +94,10 @@ public class TargetSpawner : MonoBehaviour
 
     public void StopGame()
     {
+        if (menuMusic != null) 
+        {
+            menuMusic.Play(); // La musique revient au menu !
+        }
         gameStarted = false;
         timedTargetMode = false;
         movingTargetMode = false;

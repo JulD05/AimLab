@@ -8,7 +8,6 @@ public class LeaderboardUI : MonoBehaviour
     private UIManager uiManager;
     private LeaderboardDatabase leaderboardDatabase;
 
-    private GameObject leaderboardButtonRoot;
     private GameObject difficultyRoot;
     private GameObject boardRoot;
     private GameObject entryRoot;
@@ -32,21 +31,16 @@ public class LeaderboardUI : MonoBehaviour
     public void SetHomeButtonVisible(bool visible)
     {
         EnsureBuilt();
-        leaderboardButtonRoot.SetActive(visible);
     }
 
     public void HideAll()
     {
-        if (leaderboardButtonRoot != null)
-            leaderboardButtonRoot.SetActive(false);
-
         HidePanels();
     }
 
     public void ShowDifficultyMenu()
     {
         EnsureBuilt();
-        leaderboardButtonRoot.SetActive(false);
         uiManager?.SetMainMenuButtonsVisible(false);
         HidePanels();
         difficultyRoot.SetActive(true);
@@ -55,7 +49,6 @@ public class LeaderboardUI : MonoBehaviour
     public void ShowLeaderboard(GameDifficulty difficulty)
     {
         EnsureBuilt();
-        leaderboardButtonRoot.SetActive(false);
         uiManager?.SetMainMenuButtonsVisible(false);
         HidePanels();
 
@@ -71,7 +64,6 @@ public class LeaderboardUI : MonoBehaviour
         if (difficulty == GameDifficulty.None) return;
         if (!leaderboardDatabase.WouldQualify(difficulty, score)) return;
 
-        leaderboardButtonRoot.SetActive(false);
         uiManager?.SetMainMenuButtonsVisible(false);
         HidePanels();
         pendingDifficulty = difficulty;
@@ -87,7 +79,7 @@ public class LeaderboardUI : MonoBehaviour
 
     void EnsureBuilt()
     {
-        if (leaderboardButtonRoot != null) return;
+        if (difficultyRoot != null) return;
 
         name = "LeaderboardUI";
 
@@ -107,29 +99,9 @@ public class LeaderboardUI : MonoBehaviour
         if (GetComponent<GraphicRaycaster>() == null)
             gameObject.AddComponent<GraphicRaycaster>();
 
-        BuildHomeButton();
         BuildDifficultyMenu();
         BuildLeaderboardPanel();
         BuildEntryPrompt();
-    }
-
-    void BuildHomeButton()
-    {
-        leaderboardButtonRoot = CreateUIObject("LeaderboardButton", transform);
-        RectTransform buttonRect = leaderboardButtonRoot.AddComponent<RectTransform>();
-        buttonRect.anchorMin = new Vector2(0.5f, 0.5f);
-        buttonRect.anchorMax = new Vector2(0.5f, 0.5f);
-        buttonRect.pivot = new Vector2(0.5f, 0.5f);
-        buttonRect.sizeDelta = new Vector2(220f, 50f);
-        buttonRect.anchoredPosition = new Vector2(0f, 0f);
-
-        Image image = leaderboardButtonRoot.AddComponent<Image>();
-        image.color = new Color(0.18f, 0.22f, 0.31f, 1f);
-        Button button = leaderboardButtonRoot.AddComponent<Button>();
-        button.onClick.AddListener(ShowDifficultyMenu);
-
-        TextMeshProUGUI label = CreateText("Label", buttonRect, "Classement", 28f, FontStyles.Bold);
-        StretchFullScreen(label.rectTransform);
     }
 
     void BuildDifficultyMenu()
@@ -291,7 +263,6 @@ public class LeaderboardUI : MonoBehaviour
     {
         HidePanels();
         uiManager?.SetMainMenuButtonsVisible(true);
-        leaderboardButtonRoot.SetActive(true);
     }
 
     void HidePanels()

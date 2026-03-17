@@ -5,6 +5,7 @@ public class UIManager : MonoBehaviour
 {
     [Header("Buttons")]
     [SerializeField] private GameObject playButton;
+    [SerializeField] private GameObject leaderboardButton;
     [SerializeField] private GameObject exitButton;
     [SerializeField] private GameObject optionButton;
 
@@ -103,10 +104,16 @@ public class UIManager : MonoBehaviour
         difficultyPanel.SetActive(!difficultyPanel.activeSelf);
     }
 
+    public void OnLeaderboardClicked()
+    {
+        leaderboardUI?.ShowDifficultyMenu();
+    }
+
     // Quand une difficulté est choisie : on cache tout l'UI
     public void HideAllUI()
     {
         if (playButton != null) playButton.SetActive(false);
+        if (leaderboardButton != null) leaderboardButton.SetActive(false);
         if (exitButton != null) exitButton.SetActive(false);
         if (optionButton != null) optionButton.SetActive(false);
         if (difficultyPanel != null) difficultyPanel.SetActive(false);
@@ -133,6 +140,7 @@ public class UIManager : MonoBehaviour
         leaderboardUI?.SetHomeButtonVisible(true);
         pauseMenuUI?.HidePause();
         if (playButton != null) playButton.SetActive(true);
+        if (leaderboardButton != null) leaderboardButton.SetActive(true);
         if (exitButton != null) exitButton.SetActive(true);
         if (optionButton != null) optionButton.SetActive(false);
         if (difficultyPanel != null) difficultyPanel.SetActive(false);
@@ -188,6 +196,7 @@ public class UIManager : MonoBehaviour
     public void SetMainMenuButtonsVisible(bool visible)
     {
         if (playButton != null) playButton.SetActive(visible);
+        if (leaderboardButton != null) leaderboardButton.SetActive(visible);
         if (exitButton != null) exitButton.SetActive(visible);
 
         if (optionButton != null)
@@ -211,6 +220,7 @@ public class UIManager : MonoBehaviour
     bool HasAnyMenuReference()
     {
         return playButton != null
+            || leaderboardButton != null
             || exitButton != null
             || optionButton != null
             || difficultyPanel != null;

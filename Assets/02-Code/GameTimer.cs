@@ -4,7 +4,7 @@ using UnityEngine;
 public class GameTimer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private float easyDuration = 10f;
+    [SerializeField] private float gameDuration = 60f;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private TargetSpawner targetSpawner;
     [SerializeField] private RaycastShooter raycastShooter;
@@ -49,7 +49,7 @@ public class GameTimer : MonoBehaviour
         UpdateTimerDisplay();
     }
 
-    public void StartEasyRound()
+    public void StartRound()
     {
         raycastShooter?.ResetRoundStats();
         isPaused = false;
@@ -57,7 +57,7 @@ public class GameTimer : MonoBehaviour
         if (timerText != null)
             timerText.gameObject.SetActive(true);
 
-        currentRoundDuration = easyDuration;
+        currentRoundDuration = gameDuration;
         remainingTime = currentRoundDuration;
         isRunning = true;
         UpdateTimerDisplay();
@@ -67,7 +67,7 @@ public class GameTimer : MonoBehaviour
     {
         isRunning = false;
         isPaused = false;
-        remainingTime = easyDuration;
+        remainingTime = gameDuration;
         currentRoundDuration = 0f;
         UpdateTimerDisplay();
 

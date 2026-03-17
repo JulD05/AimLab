@@ -1418,7 +1418,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1052101564}
         m_TargetAssemblyTypeName: GameTimer, Assembly-CSharp
-        m_MethodName: StartEasyRound
+        m_MethodName: StartRound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1768,7 +1768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameTimer
   timerText: {fileID: 1052101563}
-  easyDuration: 60
+  gameDuration: 60
   uiManager: {fileID: 2060513213}
   targetSpawner: {fileID: 1215854598}
   raycastShooter: {fileID: 0}
@@ -2032,7 +2032,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1052101564}
         m_TargetAssemblyTypeName: GameTimer, Assembly-CSharp
-        m_MethodName: StartEasyRound
+        m_MethodName: StartRound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2672,7 +2672,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1052101564}
         m_TargetAssemblyTypeName: GameTimer, Assembly-CSharp
-        m_MethodName: StartEasyRound
+        m_MethodName: StartRound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
